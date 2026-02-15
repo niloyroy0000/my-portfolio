@@ -12,8 +12,8 @@ interface SocialsProps {
 
 // Fallback default values
 const DEFAULT_SOCIAL_LINKS = {
-    github: 'https://github.com/biswajitpanday',
-    linkedin: 'https://www.linkedin.com/in/biswajitpanday',
+    github: 'https://github.com/niloyroy0000',
+    linkedin: 'https://www.linkedin.com/in/niloy-barman-552634339/',
     medium: 'https://medium.com/@biswajitpanday',
     stackoverflow: 'https://stackoverflow.com/users/2923956/biswajit-panday'
 };

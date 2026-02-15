@@ -25,12 +25,12 @@ const jetBrainsMono = JetBrains_Mono({
 
 export const metadata: Metadata = {
   title: {
-    default: "Biswajit Panday - Senior .NET Developer & AI Solutions Engineer",
-    template: "%s | Biswajit Panday"
+    default: "Niloy Kumar Barman - Senior .NET Developer & AI Solutions Engineer",
+    template: "%s |Niloy Kumar Barman"
   },
   description: "10+ years of experience supporting 20+ enterprise clients. Specialized in architecting scalable solutions and practical AI tools that deliver continuous ROI and measurable business impact. Expert in full-stack development and automation.",
   keywords: [
-    "Biswajit Panday",
+    "Niloy Kumar Barman",
     ".NET Architect",
     "Senior .NET Developer",
     "AI Solutions Engineer",
@@ -58,9 +58,9 @@ export const metadata: Metadata = {
     "Docker",
     "CI/CD",
   ],
-  authors: [{ name: "Biswajit Panday" }],
-  creator: "Biswajit Panday",
-  publisher: "Biswajit Panday",
+  authors: [{ name: "Niloy Kumar Barman" }],
+  creator: "Niloy Kumar Barman",
+  publisher: "Niloy Kumar Barman",
   formatDetection: {
     email: false,
     address: false,
@@ -71,16 +71,16 @@ export const metadata: Metadata = {
     canonical: "/",
   },
   openGraph: {
-    title: "Biswajit Panday - Senior .NET Developer & AI Solutions Engineer",
+    title: "Niloy Kumar Barman - Senior .NET Developer & AI Solutions Engineer",
     description: "10+ years of experience supporting 20+ enterprise clients. Specialized in architecting scalable solutions and practical AI tools that deliver continuous ROI and measurable business impact. Expert in full-stack development and automation.",
     url: "https://biswajitpanday.github.io",
-    siteName: "Biswajit Panday Portfolio",
+    siteName: "Niloy Kumar Barman Portfolio",
     images: [
       {
         url: "https://biswajitpanday.github.io/assets/social-preview.png",
         width: 1200,
         height: 630,
-        alt: "Biswajit Panday - Senior .NET Developer & AI Solutions Engineer | 10+ years supporting 20+ enterprise clients",
+        alt: "Niloy Kumar Barman- Senior .NET Developer & AI Solutions Engineer | 10+ years supporting 20+ enterprise clients",
         type: "image/png",
       },
     ],
@@ -92,11 +92,11 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     site: "@biswajitpanday",
     creator: "@biswajitpanday",
-    title: "Biswajit Panday - Senior .NET Developer & AI Solutions Engineer",
+    title: "Niloy Kumar Barman - Senior .NET Developer & AI Solutions Engineer",
     description: "10+ years supporting 20+ enterprise clients. Architecting scalable solutions and practical AI tools with measurable ROI. Expert in full-stack development and automation.",
     images: {
       url: "https://biswajitpanday.github.io/assets/social-preview.png",
-      alt: "Biswajit Panday - Senior .NET Developer & AI Solutions Engineer",
+      alt: "Niloy Kumar Barman - Senior .NET Developer & AI Solutions Engineer",
       width: 1200,
       height: 630,
     },

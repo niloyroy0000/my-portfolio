@@ -8,7 +8,7 @@
  */
 
 // GitHub username for the portfolio
-export const GITHUB_USERNAME = "biswajitpanday";
+export const GITHUB_USERNAME = "niloyroy0000";
 export const GITHUB_PROFILE_URL = `https://github.com/${GITHUB_USERNAME}`;
 
 // Activity types mapped from GitHub events
