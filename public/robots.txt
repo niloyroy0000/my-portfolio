@@ -1,0 +1,12 @@
+# robots.txt for biswajitpanday.github.io
+# Allow all crawlers to access all content
+
+User-agent: *
+Allow: /
+
+# Sitemap location
+Sitemap: https://biswajitpanday.github.io/sitemap.xml
+
+# Crawl-delay (optional, helps prevent server overload)
+# Most modern crawlers ignore this, but it's good practice
+Crawl-delay: 1

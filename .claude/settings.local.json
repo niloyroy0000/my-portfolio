@@ -1,0 +1,18 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(rm:*)",
+      "Bash(mv:*)",
+      "Bash(npm run lint)",
+      "Bash(npm run build:*)",
+      "Bash(ANALYZE=true npm run build)",
+      "Bash(npm run dev:*)",
+      "Bash(npm run analyze:*)",
+      "Bash(npm uninstall:*)",
+      "Bash(node:*)",
+      "Bash(npm run test-performance:*)"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}

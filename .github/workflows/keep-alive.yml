@@ -1,0 +1,43 @@
+name: Keep Workflows Alive
+
+on:
+  # Runs on the 1st of every month at midnight UTC
+  schedule:
+    - cron: '0 0 1 * *'
+
+  # Allows manual triggering for testing
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  keep-alive:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout keep-alive branch
+        uses: actions/checkout@v4
+        with:
+          ref: keep-alive
+          fetch-depth: 0
+
+      - name: Configure Git
+        run: |
+          git config --global user.name "GitHub Actions Bot"
+          git config --global user.email "actions@github.com"
+
+      - name: Create keep-alive commit
+        run: |
+          # Create a timestamp file to track keep-alive runs
+          echo "Last keep-alive run: $(date -u +"%Y-%m-%d %H:%M:%S UTC")" > .keep-alive-timestamp
+          git add .keep-alive-timestamp
+          git commit -m "Keep alive: $(date -u +"%Y-%m-%d")"
+
+      - name: Push to keep-alive branch
+        run: git push origin keep-alive
+
+      - name: Log success
+        run: |
+          echo "✅ Keep-alive commit successful"
+          echo "📅 Timestamp: $(date -u +"%Y-%m-%d %H:%M:%S UTC")"
+          echo "🔄 This prevents GitHub from disabling scheduled workflows due to inactivity"

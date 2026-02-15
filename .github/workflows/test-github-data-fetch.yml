@@ -1,0 +1,61 @@
+name: Test GitHub Data Fetch
+
+# Manual workflow to test GitHub data fetching
+# Use this to verify the fetch script works before relying on scheduled runs
+
+on:
+  workflow_dispatch:
+    inputs:
+      test_reason:
+        description: 'Reason for test'
+        required: false
+        default: 'Manual test of GitHub data fetch'
+
+permissions:
+  contents: read
+
+jobs:
+  test-fetch:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "lts/*"
+
+      - name: Install dependencies
+        run: npm ci --legacy-peer-deps
+
+      - name: Test GitHub data fetch
+        run: npm run fetch-github
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Verify data was fetched
+        run: |
+          echo "=== GitHub Data Fetch Test Results ==="
+          if [ -f "public/data/github-contributions.json" ]; then
+            echo "✅ SUCCESS: GitHub data file created"
+            echo ""
+            echo "File details:"
+            ls -lh public/data/github-contributions.json
+            echo ""
+            echo "Data preview (first 20 lines):"
+            cat public/data/github-contributions.json | python3 -m json.tool | head -20
+          else
+            echo "❌ FAILED: GitHub data file NOT created"
+            echo ""
+            echo "Checking public/data directory:"
+            ls -la public/data/ || echo "Directory does not exist"
+            exit 1
+          fi
+
+      - name: Upload data file as artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: github-contributions-data
+          path: public/data/github-contributions.json
+          retention-days: 7

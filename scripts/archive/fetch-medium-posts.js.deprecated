@@ -1,0 +1,167 @@
+/**
+ * ⚠️ DEPRECATED - This script is no longer used
+ *
+ * Medium blog posts are now synced via portfolio-admin API
+ * See: https://portfolio-admin-blue.vercel.app/blog
+ *
+ * To sync Medium posts:
+ * 1. Go to admin panel /blog page
+ * 2. Click "Sync Medium" button
+ * OR wait for automatic daily sync at midnight UTC
+ *
+ * This file is kept for emergency fallback purposes only.
+ * Last used: December 2025
+ */
+
+import fs from 'fs';
+import path from 'path';
+import { fileURLToPath } from 'url';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+const MEDIUM_RSS_URL = 'https://medium.com/feed/@biswajitpanday';
+const OUTPUT_PATH = path.join(__dirname, '../public/data/medium-posts.json');
+
+/**
+ * Parses Medium RSS XML and extracts blog post data
+ */
+function parseMediumRSS(xmlText) {
+  const posts = [];
+
+  // Extract all <item> tags
+  const itemMatches = xmlText.matchAll(/<item>([\s\S]*?)<\/item>/g);
+
+  for (const match of itemMatches) {
+    const itemXML = match[1];
+
+    // Extract individual fields
+    const title = itemXML.match(/<title><!\[CDATA\[(.*?)\]\]><\/title>/)?.[1] || '';
+    const link = itemXML.match(/<link>(.*?)<\/link>/)?.[1] || '';
+    const pubDate = itemXML.match(/<pubDate>(.*?)<\/pubDate>/)?.[1] || '';
+    const creator = itemXML.match(/<dc:creator><!\[CDATA\[(.*?)\]\]><\/dc:creator>/)?.[1] || '';
+    const guid = itemXML.match(/<guid.*?>(.*?)<\/guid>/)?.[1] || '';
+
+    // Extract categories (tags)
+    const categoryMatches = itemXML.matchAll(/<category><!\[CDATA\[(.*?)\]\]><\/category>/g);
+    const categories = Array.from(categoryMatches, m => m[1]);
+
+    // Extract description/excerpt (strip HTML)
+    const descMatch = itemXML.match(/<description><!\[CDATA\[([\s\S]*?)\]\]><\/description>/);
+    let description = '';
+    if (descMatch) {
+      // Strip HTML tags and get first 200 characters
+      description = descMatch[1]
+        .replace(/<[^>]*>/g, '')
+        .replace(/&nbsp;/g, ' ')
+        .replace(/&amp;/g, '&')
+        .replace(/&lt;/g, '<')
+        .replace(/&gt;/g, '>')
+        .replace(/&quot;/g, '"')
+        .trim()
+        .substring(0, 200);
+    }
+
+    // Extract content:encoded (full content)
+    const contentMatch = itemXML.match(/<content:encoded><!\[CDATA\[([\s\S]*?)\]\]><\/content:encoded>/);
+    let content = '';
+    let thumbnail = '';
+    let readTime = 5; // Default read time
+
+    if (contentMatch) {
+      content = contentMatch[1];
+
+      // Try to extract first image as thumbnail
+      const imgMatch = content.match(/<img[^>]+src="([^">]+)"/);
+      if (imgMatch) {
+        thumbnail = imgMatch[1];
+      }
+
+      // Estimate read time based on word count (average 200 words/min)
+      const wordCount = content.replace(/<[^>]*>/g, '').split(/\s+/).length;
+      readTime = Math.max(1, Math.ceil(wordCount / 200));
+    }
+
+    posts.push({
+      id: guid,
+      title,
+      link,
+      pubDate,
+      author: creator,
+      categories,
+      excerpt: description,
+      thumbnail,
+      readTime,
+    });
+  }
+
+  return posts;
+}
+
+/**
+ * Fetches Medium RSS feed and saves to JSON
+ */
+async function fetchMediumPosts() {
+  try {
+    console.log(`\n📡 Fetching Medium RSS from: ${MEDIUM_RSS_URL}`);
+
+    const response = await fetch(MEDIUM_RSS_URL);
+
+    if (!response.ok) {
+      throw new Error(`Failed to fetch RSS: ${response.status} ${response.statusText}`);
+    }
+
+    const xmlText = await response.text();
+
+    console.log('✅ RSS fetched successfully');
+    console.log('📝 Parsing RSS XML...');
+
+    const posts = parseMediumRSS(xmlText);
+
+    console.log(`✅ Parsed ${posts.length} blog posts`);
+
+    // Ensure output directory exists
+    const outputDir = path.dirname(OUTPUT_PATH);
+    if (!fs.existsSync(outputDir)) {
+      fs.mkdirSync(outputDir, { recursive: true });
+      console.log(`📁 Created directory: ${outputDir}`);
+    }
+
+    // Save to JSON file
+    fs.writeFileSync(OUTPUT_PATH, JSON.stringify(posts, null, 2));
+
+    console.log(`✅ Saved to: ${OUTPUT_PATH}`);
+    console.log('\n📊 Blog Posts Summary:');
+    posts.slice(0, 3).forEach((post, i) => {
+      console.log(`   ${i + 1}. ${post.title}`);
+      console.log(`      📅 ${new Date(post.pubDate).toLocaleDateString()}`);
+      console.log(`      🏷️  ${post.categories.slice(0, 3).join(', ')}${post.categories.length > 3 ? '...' : ''}`);
+    });
+
+    if (posts.length === 0) {
+      console.warn('\n⚠️  Warning: No blog posts found in RSS feed');
+      console.log('   This might be because:');
+      console.log('   - The Medium profile has no published posts');
+      console.log('   - The RSS feed format has changed');
+      console.log('   - There was an error parsing the XML');
+    }
+
+  } catch (error) {
+    console.error('❌ Error fetching Medium posts:', error.message);
+
+    // Create empty array file so build doesn't fail
+    const outputDir = path.dirname(OUTPUT_PATH);
+    if (!fs.existsSync(outputDir)) {
+      fs.mkdirSync(outputDir, { recursive: true });
+    }
+    fs.writeFileSync(OUTPUT_PATH, JSON.stringify([], null, 2));
+
+    console.log('⚠️  Created empty posts file to prevent build failure');
+    console.log('   The blog preview section will show "No posts yet" message');
+
+    // Don't throw - allow build to continue
+    process.exit(0);
+  }
+}
+
+fetchMediumPosts();
